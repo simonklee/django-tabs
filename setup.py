@@ -1,5 +1,7 @@
 """
 Based entirely on Django's own ``setup.py``.
+
+This was adapted from setup.py in django-tagging (http://code.google.com/p/django-tagging/)
 """
 import os
 from distutils.command.install import INSTALL_SCHEMES
