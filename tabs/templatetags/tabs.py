@@ -5,26 +5,26 @@ register = template.Library()
 ACTIVE_TAB_NAME = 'ACTIVETABS'
 DEFAULT_NAMESPACE = 'default'
 
-def get_active_tabs(context):    
-    active_tabs = template.Variable(ACTIVE_TAB_NAME)
+def get_tabs(context):    
+    tabs = template.Variable(ACTIVE_TAB_NAME)
     try:
-        return active_tabs.resolve(context)
+        return tabs.resolve(context)
     except template.VariableDoesNotExist:
         return {}
 
-def set_active_tab(context, namespace, name):
-    active_tabs = get_active_tabs(context)
-    active_tabs[namespace] = name
-    context[ACTIVE_TAB_NAME] = active_tabs
+def set_tab(context, namespace, name):
+    tabs = get_tabs(context)
+    tabs[namespace] = name
+    context[ACTIVE_TAB_NAME] = tabs
     
-def is_active_tab(context, namespace, name):
-    active_tabs = get_active_tabs(context)
-    if namespace in active_tabs and active_tabs[namespace]==name:
+def is_tab(context, namespace, name):
+    tabs = get_tabs(context)
+    if namespace in tabs and tabs[namespace]==name:
         return True
     return False
 
     
-class ActiveTabNode(template.Node):
+class TabNode(template.Node):
     
     def __init__(self, name, namespace=None):
         if namespace is None:
@@ -43,10 +43,10 @@ class ActiveTabNode(template.Node):
         except template.VariableDoesNotExist(context):
             name = None
 
-        set_active_tab(context, namespace, name)
+        set_tab(context, namespace, name)
         return ''
 
-class IfActiveTabNode(template.Node):
+class IfTabNode(template.Node):
     def __init__(self, nodelist_true, nodelist_false, name, namespace=None):
         if namespace is None:
             namespace = DEFAULT_NAMESPACE
@@ -67,11 +67,11 @@ class IfActiveTabNode(template.Node):
         except template.VariableDoesNotExist(context):
             name = None
             
-        if is_active_tab(context, namespace, name):
+        if is_tab(context, namespace, name):
             return self.nodelist_true.render(context)
         return self.nodelist_false.render(context)
 
-def activetab(parser, token):
+def tab(parser, token):
     bits = token.contents.split()[1:]
     if len(bits) not in (1, 2):
         raise template.TemplateSyntaxError, "Invalid number of arguments"
@@ -82,10 +82,10 @@ def activetab(parser, token):
         namespace = bits[0]
         name = bits[1]
         
-    return ActiveTabNode(name, namespace)
-activetab = register.tag('tab', activetab)
+    return TabNode(name, namespace)
+tab = register.tag('tab', tab)
 
-def ifactivetab(parser, token):
+def iftab(parser, token):
     bits = token.contents.split()[1:]
     nodelist_true = parser.parse(('else', 'endiftab'))
     token = parser.next_token()
@@ -102,6 +102,6 @@ def ifactivetab(parser, token):
     else:
         namespace = bits[0]
         name = bits[1]
-    return IfActiveTabNode(nodelist_true, nodelist_false, name, namespace)
+    return IfTabNode(nodelist_true, nodelist_false, name, namespace)
 
-ifactivetab = register.tag('iftab', ifactivetab)
+iftab = register.tag('iftab', iftab)
