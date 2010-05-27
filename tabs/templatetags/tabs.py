@@ -83,14 +83,14 @@ def activetab(parser, token):
         name = bits[1]
         
     return ActiveTabNode(name, namespace)
-activetab = register.tag('activetab', activetab)
+activetab = register.tag('tab', activetab)
 
 def ifactivetab(parser, token):
     bits = token.contents.split()[1:]
-    nodelist_true = parser.parse(('else', 'endifactivetab'))
+    nodelist_true = parser.parse(('else', 'endiftab'))
     token = parser.next_token()
     if token.contents == 'else':
-        nodelist_false = parser.parse(('endifactivetab',))
+        nodelist_false = parser.parse(('endiftab',))
         parser.delete_first_token()
     else:
         nodelist_false = template.NodeList()
@@ -104,7 +104,4 @@ def ifactivetab(parser, token):
         name = bits[1]
     return IfActiveTabNode(nodelist_true, nodelist_false, name, namespace)
 
-ifactivetab = register.tag('ifactivetab', ifactivetab)
-    
-        
-        
+ifactivetab = register.tag('iftab', ifactivetab)
