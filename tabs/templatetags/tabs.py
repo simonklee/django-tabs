@@ -2,7 +2,7 @@ from django import template
 
 register = template.Library()
 
-ACTIVE_TAB_NAME = '_ACTIVETABS'
+ACTIVE_TAB_NAME = 'ACTIVETABS'
 DEFAULT_NAMESPACE = 'default'
 
 def get_active_tabs(context):    
